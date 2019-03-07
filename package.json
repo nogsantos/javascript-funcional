@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "./node_modules/.bin/jest --verbose --no-cache"
   },
   "keywords": [],
   "author": "",
@@ -14,6 +14,20 @@
     "express": "^4.16.2"
   },
   "devDependencies": {
-    "cors": "^2.8.4"
+    "cors": "^2.8.4",
+    "jest": "24.1.0"
+  },
+  "jest": {
+    "verbose": true,
+    "testPathIgnorePatterns": [
+      "<rootDir>/node_modules/",
+      "<rootDir>/package.json"
+    ],
+    "moduleNameMapper": {
+      "/src/(.*)": "<rootDir>/public/app/$1"
+    },
+    "modulePaths": [
+      "<rootDir>"
+    ]
   }
 }
