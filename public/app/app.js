@@ -1,5 +1,5 @@
 import "./utils/array-helpers.js"; // instancia e carregamento do prototype em memória
-import { log } from "./utils/promise-helpers.js";
+import { log, timeoutPromise } from "./utils/promise-helpers.js";
 import { notasService as service } from "./notas/service.js";
 import {
   takeUntil,
@@ -14,8 +14,7 @@ const operations = pipe(
 );
 
 const action = operations(() =>
-  service
-    .sumItems("2143")
+  timeoutPromise(200, service.sumItems("2143"))
     .then(console.log)
     .catch(console.log)
 );
