@@ -38,3 +38,20 @@ export const partialize = (fn, ...params) => fn.bind(null, ...params);
  * @param {Function} fn Callback function
  */
 export const takeUntil = (times, fn) => () => times-- > 0 && fn();
+
+/**
+ * Filtra a quantidade de cliques do usuário dentro de uma janela de tempo.
+ * Por exemplo, se ele clicar diversas vezes no botão dentro da janela de tempo de meio segundo nós
+ * ignoraremos todos os cliques. Apenas o clique que ultrapassar meio segundo sem que um novo clique seja
+ * realizado disparará a ação do botão. Em suma, queremos aplicar o pattern Debounce.
+ *
+ * @param {Number} milliseconds Tempo entre as execuções
+ * @param {Function} fn Função de callback
+ */
+export const debounceTime = (milliseconds, fn) => {
+  let timer = 0;
+  return () => {
+    clearTimeout(timer);
+    timer = setTimeout(fn, milliseconds);
+  };
+};
