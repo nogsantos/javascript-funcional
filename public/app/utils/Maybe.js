@@ -40,7 +40,7 @@ export class Maybe {
       return Maybe.of(null);
     }
     const value = fn(this._value);
-    return this.of(value);
+    return Maybe.of(value);
   }
 
   /**
