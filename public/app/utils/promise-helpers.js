@@ -47,3 +47,23 @@ export const delay = milliseconds => data =>
   new Promise((resolve, reject) =>
     setTimeout(() => resolve(data), milliseconds)
   );
+
+/**
+ *
+ * A função retry receberá uma função que ao ser chamada, deve retornar uma nova Promise com a operação
+ * que desejamos realizar, o número de tentativas e o intervalo de tempo entre essas tentativas.
+ *
+ * Foi necessário realizar delay(time)(), porque delay retorna uma função que ao ser chamada devolve uma
+ * Promise e, a chamada encadeada à then() só será feita depois do tempo do delay ter expirado.
+ *
+ * @param {Number} retries Quantidade de tentativas
+ * @param {Number} milliseconds Intervalo entre as tetativas
+ * @param {Function} fn Função que ao ser chamada, retorna uma promise
+ */
+export const retry = (retries, milliseconds, fn) =>
+  fn().catch(err => {
+    console.log("Retring", retries);
+    return delay(milliseconds)().then(() =>
+      retries > 1 ? retry(--retries, milliseconds, fn) : Promise.reject(err)
+    );
+  });
