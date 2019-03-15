@@ -1,16 +1,19 @@
 import { handleStatus } from "../utils/promise-helpers.js";
 import { partialize, pipe } from "../utils/operators.js";
-
+import { Maybe } from "../utils/maybe.js";
 const API = `http://localhost:3000/notas`;
 
 /**
- * Pensando um paradigma funcional, cria-se as funções que substituem o encadeamento das funções
+ * Pensando um paradigma funcional, cria-se as funções que substituem o encadeamento das funções.
+ *
+ * Cada função recebe o tipo monádico
  */
-const getItemFromNotas = notas => notas.$flatMap(nota => nota.itens);
-const filterItemsByCode = (code, items) =>
-  items.filter(item => item.codigo === code);
-const sumItemsValue = items =>
-  items.reduce((total, item) => total + item.valor, 0);
+const getItemsFromNotas = notasM =>
+  notasM.map(notas => notas.$flatMap(nota => nota.itens));
+const filterItemsByCode = (code, itemsM) =>
+  itemsM.map(items => items.filter(item => item.codigo == code));
+const sumItemsValue = itemsM =>
+  itemsM.map(items => items.reduce((total, item) => total + item.valor, 0));
 
 /**
  * Mesmo resultado do código acima, porém, resultado o encadeamento de funções.
@@ -33,6 +36,7 @@ export const notasService = {
   listAll() {
     return fetch(API)
       .then(handleStatus)
+      .then(notas => Maybe.of(notas))
       .catch(err => {
         console.log(err);
         return Promise.reject("Não foi possível obter as notas fiscais");
@@ -41,10 +45,12 @@ export const notasService = {
 
   sumItems(code) {
     const sumItems = pipe(
-      getItemFromNotas,
+      getItemsFromNotas,
       partialize(filterItemsByCode, code),
       sumItemsValue
     );
-    return this.listAll().then(sumItems);
+    return this.listAll()
+      .then(sumItems)
+      .then(result => result.getOrElse(0));
   }
 };
